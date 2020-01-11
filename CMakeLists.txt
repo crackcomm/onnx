@@ -363,6 +363,14 @@ target_include_directories(onnx PUBLIC
 target_link_libraries(onnx PUBLIC onnx_proto)
 add_onnx_global_defines(onnx)
 
+add_library(onnx_c "${ONNX_ROOT}/onnx/onnx-c.h" "${ONNX_ROOT}/onnx/onnx-c.cc")
+target_include_directories(onnx_c PUBLIC
+  $<BUILD_INTERFACE:${ONNX_ROOT}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(onnx_c PUBLIC onnx onnx_proto)
+add_onnx_global_defines(onnx_c)
+
 if(BUILD_ONNX_PYTHON)
   if("${PY_EXT_SUFFIX}" STREQUAL "")
     if(MSVC)
@@ -611,6 +619,7 @@ install(EXPORT ONNXTargets DESTINATION share/cmake/ONNX)
 install(TARGETS
   onnx onnx_proto
   onnxifi onnxifi_dummy onnxifi_loader
+  onnx_c
   EXPORT ONNXTargets DESTINATION lib)
 
 if(NOT ANDROID AND NOT IOS)
